@@ -1,0 +1,452 @@
+\documentclass[3p,twocolumn,preprint,10pt]{elsarticle}
+\journal{European Urology}
+\newcommand{\n}{5}
+\newcommand{\Tpreop}{$\mathcal{T}_{MRI \Rightarrow Patient}$}
+\newcommand{\Tlens}{$\mathcal{T}_{Patient \Rightarrow Screen}$}
+\newcommand{\Tsystem}{$\mathcal{T}_{MRI \Rightarrow Screen}$}
+\begin{document}
+\begin{frontmatter}
+\title{Image Guidance for Robot Assisted Radical Prostatectomy}
+\author[cmic]{S. ~Thompson\corref{cor1}}
+\author[kings]{G. ~Penney}
+\author[Guys]{O. ~Elhage}
+\author[Guys]{P. ~Kumar}
+\author[cmic]{D. ~Hawkes}
+\author[Guys]{P. ~Dasgupta}
+\cortext[cor1]{Corresponding author, s.thompson@ucl.ac.uk}
+\address[cmic]{Centre for Medical Image Computing, UCL, London WC1E 6DP, UK}
+\address[kings]{Interdisciplinary Medical Imaging Group, Kings College London, London, UK}
+\address[Guys]{MRC Centre for Transplantation, NHIR Biomedical Research Centre, King's Health Partners, Guy's Hospital, London, UK}
+\begin{abstract}
+{\bf Background:}
+The increasing use of laparoscopic surgery for urological procedures presents
+additional challenges to the surgeon. Whilst the patient gains from smaller
+incisions, the surgeon loses tactile feed back and the ability to 
+visualise the wider surgical scene. It has been proposed that 
+laparoscopic surgical outcomes could be improved through image guidance. 
+We present our initial experiences of implementing an image guidance 
+system for robot assisted radical prostatectomy. \newline
+{\bf Objective:}
+To test the feasibility of image guidance in robot assisted radical 
+prostatectomy. \newline
+{\bf Design, Setting, and Participants:}
+Development work used 3 cadavers and an anatomy phantom.
+The system has been used on 5 patients. The procedure is applicable to all
+patients due to undergo a robot assisted radical prostatectomy. \newline
+{\bf Intervention:}
+During surgery the surgeon can refer to the patient's MRI (collected prior to the
+operation) overlaid on the endoscopic video image. The overlay is viewed on a
+monitor separate to the robot's console \newline
+{\bf Measurement.}
+The result of the overlay process was measured qualitatively by the surgeon. The 
+clinical outcomes for the five patients were compared to baseline figures for
+the surgical team. \newline
+{\bf Results and Limitations:}
+The use of the overlay system has not resulted in any measurable change in clinical 
+outcomes. The surgeons found the system to be a useful tool for reference during 
+surgery. The ability to accurately track the laparoscope is the limiting factor
+preventing routine deployment of the system. \newline
+{\bf Conclusions.}
+Image guidance during robot assisted radical prostatectomy is feasible, however 
+further development is required before the system could be 
+used routinely. \newline
+\end{abstract}
+\begin{keyword}
+image guidance \sep
+RARP \sep
+prostate \sep
+\end{keyword}
+\end{frontmatter}
+\section{Introduction}
+Our proposed image guidance takes the form of an augmented reality system, where
+a secondary image of the patient's anatomy is projected and overlaid onto the surgeon's 
+video console. Figure \ref{fig:Overlay} shows a pair of screen shots from the system 
+in use. At present the overlay is presented to the surgeon on a separate screen to the 
+daVinci console. Once the robustness of the system is proven we envisage projecting the 
+display directly onto the daVinci console. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.23\textwidth]{/home/thompson/phd/data/Exp03_OnPatient/Patient05/AlignAndOverlay/Frame43051_20}
+\includegraphics[width=0.23\textwidth]{/home/thompson/phd/data/Exp03_OnPatient/Patient05/AlignAndOverlay/Frame43051}
+\end{center}
+\caption{\label{fig:Overlay}The surgeon's view of the image guidance system. A preoperative 
+image of the patient is overlaid onto the surgical scene. The opacity of the overlay can 
+be varied between 0 and 100\%. (20\% shown at left, 100\% at right).}
+\end{figure}
+
+We have implemented a minimalist user interface that allows the surgeon to move through the 
+MRI image in the three anatomical directions, and adjust the opacity of the overlay from 
+0\% (ie. no image) to 100\% (the surgical scene is obscured). Most proposed 
+augmented reality systems for surgery propose a more sophisticated display, with 
+rendered 3D representations of anatomy being overlaid, rather than the MRI image, see
+\cite{pap208} for a recent example. \cite{pap178} give a good demonstration 
+of the possibilities of augmented reality for laparoscopic surgery. 
+
+We have maintained a simple MRI slice overlay  
+done this for two reasons. Firstly the implementation of systems that show rendered 3D anatomy
+require that the preoperative image (MRI) is ``segmented". The anatomy of interest, 
+(prostate, tumour location, neuro-vascular bundles) must all be defined 
+in the image. At present this would be done manually by a radiologist.
+%This process removes information from the image, removing some decision 
+%making form the surgical team. 
+By keeping the display of the raw MRI image
+we ensure that the surgical team retains full decision making control.
+Secondly, segmenting the image introduces an additional source of errors. 
+
+The type of projection used (segmented and rendered anatomy or MRI slices) does
+not depend on the registration technology described in this paper. We intend to use our system
+at a later data to properly compare various overlay methods and user interfaces.
+
+Augmented reality image guided surgery systems depend on two pieces of information.
+Firstly the location of the preoperative image relative the patient, and the secondly the location and
+pose of the camera (laparoscope) lens relative to the patient. Each data set has a coordinate system,
+Figure
+\ref{fig:Transforms} defines the coordinate systems of interest for this
+application. The relative positions of the data sets are defined by 
+\begin{figure*}
+\begin{center}
+\includegraphics[width=0.92\textwidth]{Transforms}
+\end{center}
+\caption{\label{fig:Transforms}Any image guided surgery system is defined by a 
+set of geometric transforms between different coordinate systems. The figure above 
+defines the coordinate systems relevant here. The transforms between individual 
+coordinate systems are combined to give the transform between the preoperative MRI
+($CS_{MRI}$) and the endoscope's video screen ($CS_{Screen}$). 
+%Several other 
+%authors estimate the transform between $CS_{Sreen}$ and $CS_{Patient}$ (here 
+%represented for simplicity by the pelvic bone) using 
+%visible anatomy and/or fiducial markers. We first attempted to find this transform
+%using an external tracking system.
+}
+\end{figure*}
+mathematical ``transforms" between the coordinate systems.
+\begin{itemize}
+\item{\Tpreop \ defines the position of the preoperative image (MRI in this case) 
+relative to the patient.}
+\item{\Tlens \ defines the position and pose of the endoscope relative to the patient 
+together with the endoscopes projection characteristics (focal length, etc.)}
+\item{\Tsystem \ is the product of the preceding 2 transforms and defines how 
+the preoperative image is projected onto the screen}
+\end{itemize}
+
+Implementation of an image guidance system is fundamentally a task of accurate estimation of the 
+above transforms. 
+Errors will manifest as a mismatch between the projected preoperative 
+image and the video through the endoscope.  
+Methods to quantify and minimise these errors form the core of our research.
+
+The idea of using augmented reality to aid surgery is not 
+new, with systems having been proposed by \cite{pap191}, \cite{pap190}, \cite{pap188} 
+and \cite{pap210} to name but a few. These systems are conceptually similar to ours 
+in that \Tpreop \ and \Tlens \ are found independently. \Tpreop \ is found using
+a set of fiducial markers, \Tlens \ is found using a tracking system attached to the endoscope.
+These 
+systems will function regardless of what anatomy is visible through the endoscope. 
+More recent 
+systems proposed for the daVinci \cite{pap208} and \cite{pap203}, abandon endoscope tracking and 
+attempt to estimate \Tsystem \ directly using visible surfaces or fiducial markers. 
+These have the advantage that they do not require accurate endoscope tracking, 
+but their functioning is dependent on what anatomy is visible through the endoscope.
+
+%Our system was designed to estimate \Tpreop \ and \Tlens \ independently so 
+%that image guidance would be available through out surgery. 
+Rather than using 
+fiducial markers to estimate \Tpreop \ we image the pelvic bone intra-operatively 
+using percutaneous ultrasound. \Tlens \ is determined using an Optotrak Certus 
+optical tracking system. This was used to in preference to using the 
+daVinci kinematic data as the available literature suggested it should be the
+more accurate method (\cite{pap171,pap164,pap153}). 
+
+We found, see Section \ref{sec:Results}, that whilst 
+optical tracking of the endoscope worked as well as using the kinematic data, it 
+was not sufficiently accurate for use in practice. Therefore we introduced an 
+additional manual alignment that allowed the \Tlens \ to be adjusted during surgery.
+%our current system
+%uses a direct determination of \Tsystem \ using the visible inner surface of the 
+%pubic bone, whilst we work to improve endoscope tracking.
+
+
+%get some references in here.
+%\cite{pap208} % Lu et al
+%\cite{pap210} % Edwards et al
+%\cite{pap191} % Birfellner
+%\cite{pap188} % Shahidi (endoscope)
+%\cite{pap203} % Hu (2007)
+%\cite{pap190} % Fuchs, 1998, has the benefit of being old
+%\cite{pap178} % Ukimara, image fusion 
+%image guidance
+%picture of overlay images
+%picture of method. Have a rendered MRI, and endoscope. Introduce the concept of 
+%a mathematical transform. 
+%References to other reports, use hamlyn poster reference plus some others.
+\section{Material}
+The system was assessed in three separate experiments, using three different data sets.
+\subsection{Accuracy of Estimating \Tpreop}
+The accuracy with which the patient's prostate could be found in theatre using our 
+proposed method of intraoperative imaging of the pelvic bone was determined using
+data from previous work undertaken by our lab on orthopaedics. Each patient gave written
+consent for 
+their data being used for future studies. 21 separate CT images of adult make pelvic bones
+were used to construct a population shape model. 
+This model and the in theatre registration method
+was tested on 3 cadavers. Each cadaver was imaged with CT and ultrasound.
+A gold standard transform between these images was determined using 
+a set of bone implanted fiducial markers.
+\subsection{Accuracy of Estimating \Tlens}
+The accuracy of the tracking system was assessed using a set of visual calibration objects.
+These included a calibration grid consisting of a set of dots, and a custom made
+anatomy phantom. This is shown in Figure \ref{fig:Phantom}
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.46\textwidth]{/home/thompson/phd/data/Exp02/exp2Photos/trackingCollar}
+%\includegraphics[width=0.23\textwidth]{/home/thompson/phd/data/Exp02/exp2Photos/Certus}
+\end{center}
+\caption{\label{fig:Phantom}The anatomy phantom shown in theatre with the daVinci robot.}
+\end{figure}
+\subsection{Evaluating System in Theatre}
+The overlay system and its use in theatre was evaluated on \n \ patients in theatre.
+The study protocol was reviewed by the hospital's ethical review board and the each of 
+the \n \ participants gave their written consent. Each patient had already had a T2 weighted
+MRI taken as part of their treatment planning and this was used for the overlay. 
+%5 patients
+%3 cadavers
+\section{Methods}
+\subsection{Accuracy of Estimating \Tpreop}
+Finding the patient in theatre ( estimating \Tpreop ) is a 
+two stage process. 
+
+\subsubsection{In Theatre Registration}
+\label{sec:InTheatreReg}
+We used as existing approach, see \cite{pap009} for 
+finding the patient's pelvic bone in theatre. With the patient in the
+operating position, but prior to port cutting, 
+a set of ultrasound slice images are taken of the patient's pelvic bone. 
+The distribution of slices across each iliac crests and the pubis was carefully 
+controlled. 
+\begin{figure*}
+\begin{center}
+\includegraphics[width=0.46\textwidth]{/home/thompson/phd/all/chapters/Figures/USSlicesOnBone}
+\includegraphics[width=0.46\textwidth]{/home/thompson/phd/Hamlyn-Robotics/UltrasoundCapture_Anon}
+\end{center}
+\caption{\label{fig:Ultrsound}A set of ultrasound images of the patient's pelvic bone 
+are acquired immediately prior to surgery, with the patient in the operating position. These
+are aligned to a pseudo CT image of the patient's pelvis using an image to image registration 
+algorithm.}
+\end{figure*}
+
+The position of each ultrasound slice in relation to the patient
+is determined using the same optical tracking system used to track the 
+endoscope, see section \ref{sec:EndoTrack}.
+The individual slices are combined to give a single 3D ultrasound image. 
+The resulting ultrasound image is registered to the preoperative MRI image.
+%This locates the patient's pelvic bone. 
+As the prostate can move in relation to the
+pelvic bone this will not give an exact location for the prostate. However we believe
+that the motion of the prostate will be relatively minor and it should be possible to 
+adjust for it later in the process.
+
+The accuracy of the registration algorithm was measured using ultrasound and CT data 
+taken from the 3 cadaver data sets.
+
+\subsubsection{Pre-Processing the MRI Image}
+In order for the above method to work it was necessary to pre-process the patient's MRI to 
+show the edges of the pelvic bone more clearly, making a pseudo CT image.
+This was necessary as the bone edge is not 
+clearly delineated in an MRI image. This could have been solved by taking an
+additional CT scan of the patient, however this cannot be clinically justified at present. 
+Manual segmentation of the pelvic bone was neither practical nor likely to be 
+particularly accurate, therefore we developed a novel automatic 
+algorithm that warps a second patient's CT image to match the MRI image. 
+The allowable warping was controlled using a ``statistical deformation model" (SDM) learnt 
+from a population of 21 CT images of adult male pelvic bones.
+
+The accuracy of this warping algorithm was assessed using the 21 CT data sets used to 
+build the SDM. For each of the 21 data sets a SDM was built from the remaining 20 data sets.
+The CT image was approximated by the shape model and this approximate image was used in a 
+pseudo ultrasound to CT registration, as per Section \ref{sec:InTheatreReg}. 
+\subsection{Accuracy of Estimating \Tlens}
+\label{sec:EndoTrack}
+The endoscope was traced using an optical 
+tracking system \footnote{Optotrak Certus, NDI, Ontario, Canada}. 
+14 infra red emitting diodes were attached to the 
+endoscope using a collar. Figure \ref{fig:EndoTracker} shows the collar and the tracking 
+cameras.
+\begin{figure*}
+\begin{center}
+\includegraphics[width=0.96\textwidth]{/home/thompson/phd/data/Exp02/exp2Photos/Certus_Markup_andCollar}
+\end{center}
+\caption{\label{fig:EndoTracker}The endoscope is tracked with 14 infra red emitting diodes 
+attached to a collar. The position of each diode is tracked using a three camera
+Optotrak Certus system.}
+\end{figure*}
+
+%I've already said this
+%Success in tracking endoscopes with these systems has been reported 
+%by other authors, \cite{pap188}. In contrast endoscope tracking using the 
+%robot's own kinematic data has been less successful, \cite{pap164}.
+
+The endoscope was calibrated by imaging a 2 dimensional grid from 
+several angles, Figure \ref{fig:CalibViews} shows an ideal 
+pattern of calibration views, allowing for the capability of the 
+tracking system. The camera calibration determines both the 
+intrinsic (focal lengths, principal points, and barrel distortions) and extrinsic
+(the transform between the endoscope lens and the tracking collar) parameters of the 
+endoscope.
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.48\textwidth]{/home/thompson/phd/VTKStuffFromGP/EndoscopeCalibration/11Views}
+\end{center}
+\caption{\label{fig:CalibViews}At least 11 views a 2 dimensional calibration grid 
+are captured. These are used to determine the intrinsic (focal lengths and distortion) 
+and extrinsic (the transform between the tracking collar and the lens) parameters of the 
+endoscope.}
+\end{figure}
+
+The accuracy of both the endoscope calibration and endoscope tracking was determined
+by first estimating the individual tracking errors at each infra red emitting diode.
+The reported position of each diode was compared to the diode position 
+estimated from the positions of the remaining diodes on the 
+tracking collar. Using a large amount of tracking data from the calibration 
+procedure and from tracking data collected in theatre it was possible to construct 
+a distribution of tracking errors for each diode. These errors were then used in 
+Monte-Carlo simulations of the tracking and calibration process to determine both the
+calibration and tracking errors.
+\subsection{Evaluating System in Theatre}
+Using the preceding method the system is in theory complete, with both \Tlens \ and \Tpreop \
+known.
+As will be seen in Section \ref{sec:Results} however, the error in estimating \Tlens \ is 
+too high for a practical image guidance system. We therefore introduced a user interface that
+allowed \Tlens \ to be rapidly adjusted based on the anatomy visible through the endoscope. 
+
+Prior to surgery a set of 43 points on the inner surface of the bony pubic arch are identified
+in the MRI image. These are then projected onto the surgical scene as a wire-frame 
+and \Tlens \ adjusted manually. The adjustment process takes less than 30 seconds.
+\begin{figure*}
+\begin{center}
+\includegraphics[width=0.46\textwidth]{/home/thompson/phd/all/chapters/figures/Notalign19999}
+\includegraphics[width=0.46\textwidth]{//home/thompson/phd/all/chapters/figures/align19999}
+\end{center}
+\caption{\label{fig:Alignment}A set of 42 points on the inner surface of the pubic arch 
+are manually identified in the MRI image. These form a wire frame that can be projected 
+over the surgical scene. A simple user interface is then used to adjust the 
+endoscope tracking data to align the projected wire frame to the visible anatomy. 
+The left hand image shows the wire frame and visible anatomy out of alignment, the right hand
+image shows them after alignment. 
+Alignment takes less than 30 seconds.}
+\end{figure*}
+
+During surgery, typically after the removal of tissues obscuring the prostate and 
+prior to any resection of the prostate the surgeon would pause
+the procedure. A technician aligns the images, and present the overlay to the 
+surgeon and surgical assistants. This allows a review of the operative plan with 
+both intraoperative video and preoperative MRI present. The usefulness of the 
+overlay was assessed qualitatively by the surgeon. Clinical outcomes were also compared 
+with typical cases.
+%3 experiments
+%Registration MRI to patient. 
+%Endoscope tracking (need to describe my method somewhat)
+%Trial on patients (manual alignment)
+\section{Results}
+\subsection{System Accuracies}
+% a table here, showing error in millemeters for each bit, plus an on screen error.
+\label{sec:Results}
+Table \ref{tab:AccuracyResults} gives the accuracy of each system component expressed in 
+millimetres at a point near the apex of the prostate. 
+\begin{table}
+\begin{tabular}{|p{0.33\textwidth}|p{0.09\textwidth}|}\hline
+Description & Error \\ \hline
+\hspace{0.15cm} Ultrasound to Bone Registration & 5.3 mm  \\ 
+\hspace{0.15cm} MRI to CT Warping & 5.0 mm \\ \hline
+\Tpreop  & 7.3 mm \\ \hline
+\hspace{0.15cm Endoscope Calibration & 11.1 mm \\ 
+\hspace{0.15cm Endoscope Tracking & 16.9 mm \\ \hline
+\Tlens }& 20.2 \\ \hline
+\Tsystem }& 78.17 mm \\ \hline
+%20.47 (5.3)
+%19.65 (5.0)
+%28.38 (7.3)
+%42.87 (11.1)
+%65.41 (16.9)
+%sum   (20.2)
+%78.17 (20.2)
+\end{tabular}
+\caption{\label{tab:AccuracyResults}The accuracy of each component of the image guidance of the
+system expressed as the root mean square error in millimetres at a point near the apex of the 
+prostate. To allow comparison between the different system components a standard 
+endoscope pose is used, so that the prostate apex is approximately 200 mm distant from the 
+endoscope lens.} 
+\end{table}
+In order to express the 
+endoscope tracking and calibration errors in this way it was necessary to 
+define a typical endoscope pose. We used an endoscope position that 
+occurred frequently during the procedures studied. The apex of the 
+prostate here is typically about 200 mm from the lens of the endoscope. 
+The pose can be seen in the Figures \ref{fig:Transforms}, 
+\ref{fig:Phantom}, \ref{fig:Alignment}, and \ref{fig:SystemError}.
+
+To communicate the system accuracy to the surgeon a standard error
+visualisation method was developed. A single point in the MRI image is projected 
+on to the screen 1000 times under the influence of the various system errors. 
+Figure \ref{fig:SystemError} provides a visualisation 
+of the total system error overlaid over the typical surgical scene.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.48\textwidth]{/home/thompson/phd/data/EndoscopeCalibration/Davcinci_Straight_18_02_10/Analysis/MySimulations/TotalError}
+\end{center}
+\caption{\label{fig:SystemError}A visualisation of the total system error. A single point,
+lying near the apex of the prostate and shown at the centre of the cross hairs, has been 
+projected onto the screen 1000 times under the influence of the various errors. The green 
+ellipse represents a single standard deviation for the projected points, the blue 
+ellipse 2 standard deviations. If the image guidance system as presented was used
+in multiple operations, we would expected the overlaid point to fall within the green ellipse
+approximately 68 \% of the time and within the blue ellipse 93 \% of the time.}
+\end{figure}
+
+\subsection{Clinical Outcomes}
+Table \ref{tab:Clinical} summarises the clinical outcomes for the \n \ patients 
+included in the clinical study. Qualitatively the surgeon's found the system 
+a useful addition in theatre.
+\begin{table*}
+\begin{tabular}{|p{0.1\textwidth}|p{0.1\textwidth}|p{0.1\textwidth}|p{0.1\textwidth}|p{0.15\textwidth}|p{0.1\textwidth}|p{0.15\textwidth}|} \hline
+Age & Pre-Op PSA & Stage & Grade & Margins & Post-Op PSA & 8 Week Continence \\ \hline
+67 & 9.8 & pT2a & 3+3 & negative & $< 0.03$ & Good, no pads \\
+58 & 6.1 & pT3b & 3+4 & negative &  $< 0.03$ & Good, no pads \\
+68 & 11.2 & pT2c & 3+4(+5) & negative &  $< 0.03$ & 1 pad/day  \\
+58 & 7.2 & pT2c & 3+4 & negative &  $< 0.03$ & 1 pad/day for security \\
+57 & 3.8 & pT3a & 3+4 & apex +ve & $< 0.03$ & Good no pads \\ \hline
+\end{tabular}
+\caption{\label{tab:Clinical}Clinical outcomes for the five patients. There
+is no reason to expect that the system as implemented would have affected clinical outcomes.}
+\end{table*}
+%Exp01 -> 28 pix (7 mm )
+%Exp02 -> 65 pix (?? mm)
+%Exp03 -> Subjective assessment + patient outcomes + assessment of the accuracy of parts 1 and 2.
+\section{Discussion}
+This study identified the ability to track the endoscope as the key technological barrier 
+to implementing the image guidance system as planned. This concurs with the literature which 
+has seen a move away from systems that attempt to 
+track the endoscope \cite{pap164,pap190,pap188}, towards 
+systems that estimate the endoscope position directly using visible anatomy, \cite{pap208,pap203}. 
+Systems using visible anatomy will only function when suitable anatomy is visible.
+It remains our intent to build a system that uses endoscope tracking, enabling 
+guidance for the entire procedure. Improving endoscope tracking is therefore the key thrust 
+of our ongoing work. Note that the endoscope calibration error is predominantly due to the endoscope tracking 
+error, so would be removed by improving endoscope tracking.
+
+To enable immediate assessment of the user interface and the surgeon's experience of the system 
+we have also implemented a rapid adjustment method. This allows the use of the system
+for static scenes when the pubic arch is visible in the endoscopic image. The use of this
+system has been encouraging, with good feed back from the surgical team. No adverse effects have 
+been observed for the limited number of clinical cases to date. 
+%on going work
+\section{Conclusions}
+Full image guided surgery for RARP is not yet possible due to the difficultly of tracking the endoscope. 
+We have nonetheless implemented a system that uses manual adjustment of the overlay to 
+compensate for the poor endoscope tracking. This has been implemented on \n \ patients with 
+promising results.
+
+\bibliographystyle{/home/thompson/texmf/tex/latex/elsarticle/model3-num-names}
+\bibliography{../../litreview/main}
+\end{document}

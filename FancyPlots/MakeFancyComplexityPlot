@@ -1,0 +1,80 @@
+#! /usr/bin/gnuplot
+
+#going to do two charts, based on graemes, suggestion
+#Feasability vs error
+#Some of these points I can put on.
+#Usefulness vs Error
+#I can also put some of these points on
+
+set terminal postscript eps enhanced color font 'Helvetica,18'
+set output 'ComplexityVsError.eps'
+
+#want a function that passes through the following points
+#error = 78 pixels : Feasability = 1 the current total system error
+#error = 65 pixels : Feasability = 0.99 the endo tracking error only (ie use fiducials) 
+#error = 42.90 pixels : Improved tracking : Feas = 0.75 (Improved tracking algorithm, what I'm working on
+#error = 20.00 pixels : Combined tracking : Feas = 0.6 (this is quite speculative)
+#error = 10.00 pixels : Feas = 0.2 (Who knows)
+#error = 0.000 pixels : Feas = 0.0
+
+#converted pixel magnitude errors mm magnitude errors
+#using #GetMagBackProject
+#78 = 18.05 	.2309
+#With endoscope extrinic error removed ~15.7
+#65.42 = 15.15	.2316
+#42.90 = 9.74	.2270
+#19.65 = 4.51	.2295
+#10 = 2.27 to  2.31 est
+#f(x)=(x>18.05) ? 1.0 : a*x**3 + b*x**2 + c * x + d 
+f(x)=a*x**3 + b*x**2 + c * x + d 
+#third column is the weights, used here to make sure the function 
+#passes through 18.05,1.0 and 0.0 0.0
+fit f(x) '-' using 1:2:3 via a,b,c,d 
+20.00 0.1 0.1 
+15.15 0.3 1
+9.00 0.5 1
+8.74 0.7 10
+4.51 0.8 10
+4 0.65 10
+2.27 1.0 10
+0.000 1.0 0.1 
+e
+#by fitting it before adding condition below I 
+#can fit to points above 18.05, making it smoother
+#f(x)=(x>18.05) ? 1.0 : a*x**3 + b*x**2 + c * x + d 
+set title 'System Complexity vs Back Projected Error (mm)'
+set xlabel 'Back Projected Error (mm)'
+set ylabel 'Complexity'
+set xrange [0:20.0]
+set yrange [0:1.18]
+set xtics nomirror
+set ytics nomirror
+set border 3
+#set arrow from 18.05,0.1 to 18.05,1.0 nohead
+#set label 1 'Current Performance' at 18.05,1.0 left
+#set label 2 'Use Fiducial Markers' at 15.15,0.75 rotate left
+#set label 3 'Improve Tracking (Bias Correction)' at 9.74,0.75 rotate left
+#set label 4 'Improve Tracking (Add Constraints)' at 4.51,0.75 rotate left
+#set label 5 'Unknown Future Improvement' at 2.27,0.75 rotate left
+#set arrow from 15.8,0.99 to 16.5,0.90 nohead
+#set arrow from 15.15,0.99 to 14.15,1.08 nohead
+plot f(x) with lines linewidth 32 linecolor rgbcolor "#cccccc" notitle, '-' using 1:2 with points pointtype 6 pointsize 3 lc rgbcolor "black" notitle , '-' using 1:2:3 with labels notitle font 'Helvetica,16'
+20.00 0.1 "Current Performance\n(Manually Register Features)" 
+15.15 0.3 "Use Fiducial Markers" 
+9.00 0.5 "Current Performance (Register Pelvis with Ultrasound)" 
+8.74 0.7 "Improve Tracking (Bias Correction)" 
+4.51 0.8 "Improve Tracking (Add Constraints)" 
+4 0.65 "Video to Model Registration" 
+2.27 1.0 "Biomechanical Model for Non Rigid Registration" 
+e
+17.00 0.1 "Current Performance\n(Manually Register Features)" 
+17.15 0.35 "Use Fiducial Markers" 
+9.05 0.45 "Current Performance\n(Register Pelvis with Ultrasound)" 
+13.224 0.7 "Improve Tracking (Bias Correction)" 
+9.0 0.82 "Improve Tracking (Add Constraints)" 
+3 0.60 "Video to Model\nRegistration" 
+3.0 1.1 "Biomechanical Model for\nNon Rigid Registration" 
+0.000 1.0 
+e
+
+! gv ComplexityVsError.eps

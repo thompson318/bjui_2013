@@ -1,0 +1,442 @@
+\documentclass[3p,twocolumn,preprint,10pt]{elsarticle}
+%these are for FancyTable.tex
+\usepackage{colortbl} % for rowcolor
+\usepackage{xcolor} % for definecolor
+\usepackage{array} %for extrarowheight
+\usepackage{glossaries}
+\input{/home/thompson/phd/all/chapters/myacronyms}
+\include{myacronyms}
+\journal{European Urology}
+\newcommand{\n}{5}
+\newcommand{\Tpreop}{$\mathcal{T}_{MRI \Rightarrow Patient}$}
+\newcommand{\Tlens}{$\mathcal{T}_{Patient \Rightarrow Screen}$}
+\newcommand{\Tsystem}{$\mathcal{T}_{MRI \Rightarrow Screen}$}
+\begin{document}
+\begin{frontmatter}
+\title{Design and Evaluation of an Image Guidance System for Robot Assisted Radical Prostatectomy}
+\author[cmic]{S. ~Thompson\corref{cor1}}
+\author[kings]{G. ~Penney}
+\author[Guys]{O. ~Elhage}
+\author[Guys]{P. ~Kumar}
+\author[Guys]{B. ~Challacombe}
+\author[cmic]{D. ~Hawkes}
+\author[Guys]{P. ~Dasgupta}
+\cortext[cor1]{Corresponding author, s.thompson@ucl.ac.uk}
+\address[cmic]{Centre for Medical Image Computing, UCL, London WC1E 6DP, UK}
+\address[kings]{Interdisciplinary Medical Imaging Group, Kings College London, London, UK}
+\address[Guys]{MRC Centre for Transplantation, NHIR Biomedical Research Centre, King's Health Partners, Guy's Hospital, London, UK}
+\begin{abstract}
+{\bf Background:}
+The increasing use of laparoscopic surgery for urological procedures presents
+additional challenges to the surgeon. Whilst the patient gains from smaller
+incisions, the surgeon loses tactile feed back and the ability to 
+visualise the wider surgical scene.  
+Laparoscopic surgical outcomes could be improved through image guidance. 
+However, to demonstrate improved outcomes rigorous evaluation techniques are
+required.
+We present our initial experiences of implementing an image guidance 
+system for robot assisted radical prostatectomy. Together with proposals on
+how the system should be evaluated and developed.\newline
+{\bf Objective:}
+To test the feasibility of image guidance in robot assisted radical 
+prostatectomy. \newline
+{\bf Design, Setting, and Participants:}
+Development work used 3 cadavers and an anatomy phantom.
+The system has been used on 7 patients.  \newline
+{\bf Intervention:}
+During surgery the surgeon can refer to the patient's MRI (collected prior to the
+operation) overlaid on the endoscopic video image. \newline
+{\bf Measurement.}
+The result of the overlay process was measured qualitatively by the surgeon with 
+reference to the desired clinical outcomes. \newline
+{\bf Results and Limitations:}
+The use of the overlay system has not resulted in any measurable change in clinical 
+outcomes. The surgeons found the system to be a useful tool for reference during 
+surgery. A more rigorous evaluation method is proposed that will enable on going development.\newline
+{\bf Conclusions.}
+Image guidance during robot assisted radical prostatectomy is feasible. We 
+propose a series of measures that will improve further development and evaluation. \newline
+\end{abstract}
+\begin{keyword}
+image guidance \sep
+RARP \sep
+prostate \sep
+surgical innovation \sep
+\end{keyword}
+\end{frontmatter}
+\input{Introduction}
+\input{CurrentSystem}
+
+
+\section{Defining the Image Guidance System}
+\subsection{Defining the Clinical Goals}
+The success or otherwise of any surgical innovation, including an
+image guidance system, can only judged by the impact on clinically 
+outcomes. The first stage in designing both the image guidance system
+and the evaluation method is to define the relevant clinical outcomes.
+Table \ref{tab:Clinical} lists the relevant clinical outcomes for
+radical prostatectomy.
+%put in a table here, get some feedback from Ben and Prokar.
+
+\begin{table}
+\begin{tabular}{|p{0.6\linewidth}|p{0.35\linewidth}|} \hline
+Clinical Outcome & Measure \\ \hline
+Positive margin rate & (\%) \\
+Biochemical PSA Recurrence & (\%) \\
+Urinary Continence & Months, \% \\
+Erectile Function  & Months, \% \\
+Damage to rectum & (\%) \\ 
+Conversion to open & (\%) \\
+Post-Op. Pain & Vis. An. Scale \\
+Length of hospital stay & Days \\
+Conversion to open surgery & (\%) \\
+Survival & (years) \\ \hline
+\end{tabular}
+\caption{\label{tab:Clinical}Clinical outcomes that define the success or otherwise 
+of a radical prostatectomy. To be deemed a success an image guidance
+system for radical prostatectomy should have some demonstrable positive impact
+on some or all of these factors.}
+\end{table}
+
+Measuring clinical outcomes however, is of little use for the design and 
+development of an image guidance system. Listing the desired clinical 
+outcomes tells us nothing of the design goals for an 
+image guidance system. In general, assessing the clinical outcomes 
+requires substantial sample sizes to account for confounding factors and
+sufficient follow up time. Measuring any changes in the clinical outcomes
+is therefore not a practical way to evaluate and compare the performance
+of image guidance systems in the development stages. A more practical 
+approach is to use the desired clinical outcomes to define a set of system design
+goals. 
+
+\subsection{Defining the Technical Goals}
+Translating the clinical goals to technical goals is done by 
+reviewing each clinical goal and working out what the 
+image guidance systems needs to show in order to aid the surgeon 
+in achieving the clinical goals. Each technical aim defines
+something the system should ``show" the surgeon. By 
+show we mean that the system is passive, only 
+informing the surgeon of the system's estimate of 
+the position of the anatomy, but leaving any decision 
+making in the hands of the surgeon. How the system shows the 
+anatomy is a feature of the user interface and does not 
+need to be defined at this stage.  
+
+Reducing the {\bf positive margin rate}, {\bf survival} 
+and the {\bf recurrence of high PSA}
+are all function of being able to see the tumour location and the 
+prostate capsule. Improving {\bf urinary continence} is a function of 
+the clean resection and subsequent reconstruction of the urethra. 
+The urethra is cut in two places, at the interface between the
+bladder and prostate and at the prostate apex. Aiding the identification 
+of these areas should help improve continence outcomes.
+Preserving {\bf erectile function} is a direct function of 
+the preservation of the neuro-vascular bundles. This would be
+aided by showing the location of both the neuro-vascular bundles and
+the tumour.
+Avoiding {\bf damage to the rectum} would be aided by helping to 
+define the plane of the rectum below the prostate. 
+One factor that leads to {\bf conversion to open} procedure is the occurrence 
+of uncontrollable bleeding. This could be aided by showing 
+the surrounding blood vessels. Reducing the {\bf hospital stay} and the 
+{\bf post operative} pain would both be achieved by preventing 
+conversion to open surgery.
+Table \ref{tab:Goals} summarises the resulting technical goals.
+
+\begin{table}
+\begin{tabular}{|p{0.55\linewidth}|p{0.4\linewidth}|} \hline
+Design Goal & Measure \\ \hline
+%showing the bladder will help in the initial stage of the operation.
+Show Prostate & Accuracy \\
+Show Tumour Location  &  Accuracy \\
+Show Bladder Neck / Prostate Plane &  Accuracy \\
+Show position of prostate apex & Accuracy \\
+Show Prostate Capsule &  Accuracy \\
+Show Neuro-Vascular Bundles& Accuracy \\
+Show Plane of Rectum &  Accuracy \\
+Show Surrounding Blood Vessels & Accuracy \\ \hline
+\end{tabular}
+\caption{\label{tab:Goals}The design goals. To improve the outcomes shown in
+table \ref{tab:Clinical} the system should meet some or all of the goals shown here.}
+\end{table}
+How well the system meets the design goals can be measured in the very early stages
+of clinical trials, through 
+the use of post surgery questionnaires for example. Defining technical goals that 
+are relevant to the desired clinical outcomes 
+enables assessment of system performance much earlier than 
+relying on measuring clinical outcomes. The next stage is to 
+determine what measurable system parameters will influence the design goals.
+%some of these things may be very difficult to visualise. One way round 
+%this would be to track the instruments and alert the surgeon when they 
+%approach these targets.
+\subsection{Design Goals to System Parameters}
+In practice the user interface and visualisation method will have a very large 
+impact on how well the system meets it design goals. Accuracy is not very useful if
+the user cannot interpret the display. Within the scope of this paper however 
+accuracy is the primary measurable system design parameter. Concatenating tables 
+\ref{tab:Clinical} and \ref{tab:Goals} and adding a column for the system parameters 
+yields table \ref{tab:fancyTable}. 
+%\input{FancyTable}
+
+%%-- end of FancyTable.tex
+Table \ref{tab:fancyTable} links the desired clinical outcomes with system parameters and
+design goals that can be measured at the earliest stages of system development. Following this
+approach enables a development program that follows the guidelines set down by \cite{pap264},
+increasing the likelihood that the system will produce clinical benefits.
+
+\subsection{Accuracy}
+There will always be an error in the position estimated 
+by the guidance system and the actual position of a given anatomical point. 
+For a daVinci system with 3D laparoscopic video the system accuracy is 
+defined as the magnitude of the distance between the estimated and actual 
+anatomical point. In general the system accuracy can be
+described as a statistical distribution around the true 
+position of the point of interest. In this paper the accuracy figures
+given are \gls{RMS} values. To aid visualisation of this error 
+Figure \ref{fig:SystemError} shows a 5mm \gls{RMS} error projected onto
+a typical prostatectomy image.
+For several reasons, but primarily due to the 
+movement of soft tissues, the accuracy will be different for each of the
+anatomical targets. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.48\textwidth]{/home/thompson/phd/all/presentations/MICCAI09/Images/OverlayImages/RegError_5.03.eps}
+\end{center}
+\caption{\label{fig:SystemError}A visualisation of a 5mm RMS error. A single point,
+lying near the apex of the prostate and shown at the centre of the cross hairs, has been 
+projected onto the screen 1000 times under the influence a normally distributed error
+with a standard deviation of 5mm. The green 
+ellipse represents a single standard deviation for the projected points, the blue 
+ellipse 2 standard deviations. If the image guidance system as presented was used
+in multiple operations, we would expected the overlaid point to fall within the green ellipse
+approximately 68 \% of the time and within the blue ellipse 93 \% of the time.}
+\end{figure}
+
+For an image guidance system where the surgeon would otherwise be operating blind, 
+for example neurosurgery where the needle tip is not visible, there is a 
+reasonably straight forward relationship between the accuracy of the system and the
+clinical utility. 
+For robot assisted radical prostatectomy, however, 
+all of the anatomy listed in Table \ref{tab:Goals}, with 
+the exception of the tumour itself, 
+to some extent already visible to the surgeon through the 
+laparoscopic cameras. 
+Thus there may not be the same clear relationship between the system 
+accuracy and the clinical utility.
+Whilst it is clear that 
+a system that shows the anatomy to within 1 mm will be more useful 
+than a system that shows the anatomy to within 5 mm, it would be
+wrong to set a threshold error, above which the system 
+becomes unusable. The surgeon retains the ability to mentally 
+correct an inaccurately displayed image, using visible anatomy.
+
+An interesting feature of the development and evaluation of an image
+guidance system for radical prostatectomy is therefore trying to determine
+a relationship between the system's accuracy and the system's clinical utility.
+This is important because it is likely that increasing the accuracy of the
+system will also increase the system's complexity. Increased 
+complexity suggests potential 
+increases in cost, and reductions in robustness and intuitive behaviour.
+
+One of the goals of this study is to establish a framework to examine the
+trade off between accuracy and complexity. Such a frame work would enable 
+three key outcomes. Firstly it should enable the objective evaluation of 
+changes during the development of an image guidance system. Secondly 
+it will enable the effects of potential improvements to be estimated before 
+implementation, enabling the planned improvements to be plotted on a 
+development roadmap. Thirdly, it 
+enables objective comparison of competitive systems.
+At the core of this framework are two measures of system performance, 
+clinical utility and system complexity. By attempting to measure how these 
+change in relationship to system accuracy it should be possible to develop 
+an intelligent balance between accuracy and complexity. 
+\subsubsection{Clinical Utility}
+We can define a measure, clinical utility, which measures the effect of using 
+the system on the outcomes
+listed in Table \ref{tab:Clinical}. A system that has a beneficial outcome
+will have a positive clinical utility, a system with no impact on the clinical outcomes
+will have a score of zero. In reality it is unlikely that 
+clinical utility could be measured absolutely, rather it could only be 
+used as a way of comparing two or more systems. As a system's 
+accuracy improves so should its clinical utility.
+
+\subsubsection{System Complexity}
+We can define a similar measure, system complexity, which measures the 
+complexity of a system. In the context of system accuracy this attempts to 
+quantify the algorithmic complexity required to achieve a certain accuracy. 
+An example of an image guidance system with zero complexity is the 
+daVinci S. Here there is no attempt to register the pre and intra operative images, hence
+the zero complexity. At the other end of the scale, an imaginary system with 
+zero registration error could be defined as having a complexity of 1. All real 
+systems that use some sort of registration algorithm to attempt to align the pre and intraoperative 
+images can then be placed between these two extremes. At present the numbers used
+for complexity are a purely subjective estimate. Attempts to improve the 
+accuracy of a registration system will in general increase the system complexity.
+
+% change feasibility to complexity on the chart
+
+\subsection{Clinical Utility Versus Complexity}
+%Maybe I need to do this very early on.
+%It's not a trade off between accuracy and complexity 
+%but clinical utility and complexity. Accuracy is a 
+%proxy for clinical utility
+With the two measures defined we can attempt to examine the 
+trade off between clinical utility and system complexity for given systems.
+By using the links between clinical utility and system parameters (accuracy)
+developed in table \ref{tab:fancyTable} it is possible to use accuracy as a proxy for
+clinical utility.
+Complexity and accuracy can be quantified for the existing systems, more
+usefully it should be possible to estimate the effect of proposed 
+improvements, to determine whether they are likely to significantly
+improve clinical utility.
+
+\subsubsection{Measuring Accuracy}
+%System accuracies are expressed as projection error spread functions. 
+%An arbitrary point is first defined within the surgical scene. 
+%This point is then projected onto the laparoscope screen under the influence
+%of the various estimated error. This creates a spread of points on the screen around
+%the points true position. Measuring the size of this spread (in mm on the
+%plane of the actual point) gives the accuracy. The arbitrary point to 
+%be projected should be clinically represententative, in this case we used a 
+%point near the apex of the prostate, 200 mm from the lens of the laparoscope.
+
+%To communicate the system accuracy to the surgeon a standard error
+%visualisation method was developed. 
+%Figure \ref{fig:SystemError} provides a visualisation 
+%%of the registration error for the ultrasound based registration system.
+%The apex of the prostate has been projected on the screen 1000 times under the 
+%influence of a normally distributed random error with standard deviation equal to 
+%the registration error.
+
+
+The accuracy of the system utilising pelvic bone ultrasound for registration 
+was determined using a combination of numerical simulation and laboratory experiment, see 
+\cite{pap280}. These experiments indicated that the system accuracy is around 9 mm, 
+not allowing for non rigid deformation of the tissue.
+The
+ultrasound based registration process accounting for about 7 mm of error and the laparoscope 
+tracking approximately 5mm. 
+Measuring the accuracy of the system using the visible surface of the pubic arch has not 
+been done fully. The measurement is complicated by the motion of the laparoscope. However 
+based on a subjective evaluation an accuracy of around 20 mm was estimated.
+
+System complexity cannot be measured absolutely, however, it is possible to plot the systems
+relative position. The system that using ultrasound for registration is more complex than
+the system using manual visual alignment. 
+We suspect that the 
+system utilising ultrasound registration will be more clinically useful, in part because it is more 
+accurate, but also because it enables overlay before the pelvic bone becomes visible.
+
+%\subsubsection{Using Complexity and Clinical Utility to Develop a Development Roadmap}
+Whilst using complexity and clinical utility to measure quantify the image guidance systems
+is interesting, of more use is the ability to use these values to map out the development 
+of an image guidance system. During development of our systems we have identified several 
+ways that the system accuracy could be improved. These include using fiducial markers and 
+improving the laparoscope tracking algorithm. In the longer term it is theoretically possible to 
+account for non rigid motion of the patient during surgery, allowing a guidance system with
+errors less than 2mm, \cite{pap279}. Such methods increase the system accuracy, and in general 
+the system complexity. By estimating their potential accuracy, clinical utility, and complexity, it 
+is possible to plot charts showing the likely development trajectory of the system. Figure \ref{fig:FancyPlots}
+plots the possible development trajectory of the system. 
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.48\textwidth]{FancyPlots/UtilityVsError2}
+\includegraphics[width=0.48\textwidth]{FancyPlots/ComplexityVsError}
+\end{center}
+\caption{\label{fig:FancyPlots}Plots of complexity and predicted clinical utility versus 
+system accuracy, for the two systems tested to date, and a number of potential developments.}
+\end{figure}
+
+Whilst we do not expect the numerical values used in figure \ref{fig:FancyPlots} to be correct, 
+they do form a useful frame work for controlling the system development.
+Furthermore as development progresses, the plots in Figure \ref{fig:FancyPlots} can be populated with
+more accurate values of clinical utility, accuracy, and complexity. This forms a useful way to 
+transfer knowledge to future development of similar systems.
+%\subsection{System Accuracies}
+% a table here, showing error in millemeters for each bit, plus an on screen error.
+%I'm going to get rid of the calibration error and reduce the laparoscope tracking error
+%to 5mm. This seems reasonable based on the results from my dependent error work, even 
+%though I haven't quite nailed it yet.
+%\label{sec:Results}
+%Table \ref{tab:AccuracyResults} gives the accuracy of each system component expressed in 
+%millimetres at a point near the apex of the prostate. 
+%\begin{table}
+%\begin{tabular}{|p{0.33\textwidth}|p{0.09\textwidth}|}\hline
+%Description & Error \\ \hline
+%\hspace{0.15cm} MRI to patient registration  & 7 mm  \\ 
+%\hspace{0.15cm Endoscope Tracking & 5 mm \\ \hline
+%\Tlens }& 20.2 \\ \hline
+%\Tsystem }& 78.17 pix \\ \hline
+%20.47 (5.3)
+%19.65 (5.0)
+%28.38 (7.3)
+%42.87 (11.1)
+%65.41 (16.9)
+%sum   (20.2)
+%78.17 (20.2)
+%\end{tabular}
+%\caption{\label{tab:AccuracyResults}The accuracy of each component of the image guidance of the
+%system expressed as the root mean square error in millimetres at a point near the apex of the 
+%prostate. To allow comparison between the different system components a standard 
+%endoscope pose is used, so that the prostate apex is approximately 200 mm distant from the 
+%endoscope lens.} 
+%\end{table}
+
+%For each system the registration accuracy can be measured. Similarly the 
+%relative complexity of the systems can be compared. 
+
+
+%%Here I Am
+%At the start of the paper we need to define some of the terms
+%clearly
+%ie imageing -> registration -> display -> interface
+%Maybe there is some mileage in doing a more in depth literature 
+%review here, of the sort that peter Mountney suggested.
+%I did do a utility versus complexity plot. It wasn't very interesting.
+%I think I need to introduce our systems here, I can't really plot anything until
+%I've explained dome technical terms.
+
+%Different ways of acheiving the registration
+%their complexity and their accuracy
+
+%No registration (Very Simple, Not very accurate)
+%Manual direct registration (Simple, Not very accurate, we've done this
+%Scope tracking and ultrasound (More Complex, we've tested this)
+%Improved scope tracking (more complex still) (we're working on this) 
+%Feature tracking (Not much more complex)
+%Feature tracking and non rigid registration (very complex)
+
+
+
+%3 experiments
+%Registration MRI to patient. 
+%Endoscope tracking (need to describe my method somewhat)
+%Trial on patients (manual alignment)
+\subsection{Clinical Outcomes}
+Table \ref{tab:ClinicalOut} summarises the clinical outcomes for the \n \ patients 
+included in the clinical study. Qualitatively the surgeon's found the system 
+a useful addition in theatre. 
+\input{PatientTable}
+%Exp01 -> 28 pix (7 mm )
+%Exp02 -> 65 pix (?? mm)
+%Exp03 -> Subjective assessment + patient outcomes + assessment of the accuracy of parts 1 and 2.
+%on going work
+A proper understanding of the system design goals \ref{tab:Goals} has enabled the development
+of a meaningful surgeon questionnaire to assess how well the current systems meet the design 
+goals. This was not in place for the first 7 cases, but is use for future cases.
+\section{Conclusions}
+We have developed and tested a simple image guidance system for robot assisted radical prostatectomy. 
+More importantly, we have introduced methods to quantify the system performance in a clinically useful way. 
+Quantifying the system performance will enable the control of the system development process, as per
+\cite{pap264}. Controlling the system development process should yield a system that maximisers 
+positive patient outcomes, whilst ensuring a robust system. Furthermore, by demonstrating a link 
+between the measured system parameters, the system development goals, and the 
+desired clinical outcomes it should be possible 
+to demonstrate the clinical benefit of the system at an early stage. Potentially this could 
+avoid the
+usual difficulties in setting up randomised controlled trials for surgical innovations.
+
+\bibliographystyle{/home/thompson/texmf/tex/latex/elsarticle/model3-num-names}
+\bibliography{../../litreview/main}
+\end{document}

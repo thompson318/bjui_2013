@@ -1,0 +1,72 @@
+%\definecolor{latextbl}{RGB}{78,130,190}
+%this was, which tended to stick the table at teh very end of the document \begin{table*}[h]
+\begin{table*}[ht]
+%\centering
+%\setlength{\extrarowheight}{1pt}
+\begin{tabular}{|>{\columncolor[RGB]{78,130,190}}p{0.30\linewidth}>{\columncolor[RGB]{211,203,239}}p{0.30\linewidth}>{\columncolor[RGB]{78,130,190}}p{0.30\linewidth}|}
+\hline
+%\rowcolor[RGB]{78,130,190}\multicolumn{1}{|>{\columncolor[RGB]{78,130,190}}c}{\color{white}\textbf{System Parameters }} & \multicolumn{1}{>{\columncolor{latextbl!25}}{c}}{\color{black}\textbf{Requirements}} \newline  {\color{red}\textbf{ Performance Measures}} & \multicolumn{1}{>{\columncolor[RGB]{78,130,190}}c|}{\color{white}\textbf{Outcomes}} \\
+%{\color{white}\textbf{System Parameters }} & {\color{black}\textbf{Requirements}} \newline  {\color{red}\textbf{ Performance Measures}} & {\color{white}\textbf{Outcomes}} \\
+{\color{black}\textbf{System Parameters }} &  {\color{black}\textbf{Design Goals}} & {\color{black}\textbf{Clinical Outcomes}} \\ \hline
+%\rowcolor{latextbl!25}
+%\begin{enumerate}
+%\item{Accuracy}
+%\item{Update Rate}
+%\item{Visualisation Design}
+%\item{User Interface Design }
+%\item{Preoperative Imaging Resolution }
+%\item{Preoperative Imaging Tissue Contrast }
+%\end{enumerate}
+\multicolumn{3}{|>{\columncolor[RGB]{211,203,239}}{l}|}{ \textbf{Measures} }\\ 
+$\rightarrow$Accuracy \newline
+$\longrightarrow$Preop. image resolution \newline
+$\longrightarrow$Preop. image distortion \newline
+$\longrightarrow$Preop. image contrast \newline
+$\longrightarrow$Delay between image and surgery \newline
+%$\longrightarrow$Surface error \newline
+%$\longrightarrow$Model Errors \newline
+$\rightarrow$Update rate \newline
+$\rightarrow$Visualisation design \cite{pap271} \newline
+$\rightarrow$User interface design 
+& 
+$\rightarrow$Tumour location\newline
+$\rightarrow$Bladder/Prostate Interface\newline
+$\rightarrow$Extent of Prostate Capsule\newline
+$\rightarrow$Show rectum\newline
+$\rightarrow$Show Neuro Vascular Bundles\newline
+$\rightarrow$Aid Pre-Op. Planning
+&
+$\rightarrow$Positive margin rate\newline
+$\rightarrow$Biochemical PSA Reccurence\newline
+$\rightarrow$Urinary Continence (Months, \%) \newline
+$\rightarrow$Erectile FUnction (Months, \%) \newline
+$\rightarrow$Damage to rectum \newline
+$\rightarrow$Conversion to open \newline
+$\rightarrow$Post-Op. Pain \newline
+$\rightarrow$Length of hospital stay \newline
+$\rightarrow$Improved Training
+$\rightarrow$Conversion \newline
+$\rightarrow$Survival \newline
+\\ \hline
+\multicolumn{3}{|>{\columncolor[RGB]{211,203,239}}{l}|}{ \textbf{Measurement Methods} }\\
+
+Direct measurement and laboratory experiment & Observation of system in use and user questionnaire            & Analysis of trial results                                                  \\ \hline
+\multicolumn{3}{|>{\columncolor[RGB]{211,203,239}}{l}|}{ \textbf{Development Stage \cite{pap264}}}\\
+1 Idea, 2a Development                       & 2a Development, 2b Exploration                                 & 2b Exploration, 3 Assessment, 4 Long-term Study                            \\
+\hline
+\end{tabular}
+
+\caption{\label{tab:fancyTable}An image guided liver surgery system is defined by the system 
+parameters in the left most column. It is reasonable to expect that these will change 
+significantly during system development. Further, but less significant changes, can be 
+expected after release of the system. However, the system parameters are not of interest 
+clinically. The success of failure of the system will be judged by the outcomes in the 
+right hand column. A key requirement for an effective development process is 
+therefore to link the system parameters with the outcomes. Whilst the system parameters can 
+in theory be quantified via experiment or measurement, the system outcomes cannot be 
+assessed without using the system on a significant number of patients. The outermost columns can
+be linked by the careful assignment of system design goals. If these can be
+measured, even subjectively, during system development the development 
+cycle can be significantly shortened.}
+\end{table*}
+

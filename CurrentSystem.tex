@@ -1,0 +1,250 @@
+\section{Image Guided Surgery Systems}
+This paper is concerned with augmented reality 
+systems for image guided laparoscopic surgery. Such systems
+work by showing the surgeon a processed pre-operatively acquired image
+overlaid on the visible patient anatomy.
+The idea of using augmented reality to aid surgery is not 
+new, with systems having been proposed by \cite{pap191}, \cite{pap190}, \cite{pap188}, 
+\cite{pap178}, and \cite{pap210} to name but a few. 
+Systems tailored to the  daVinci surgical robot 
+have also been proposed \cite{pap208} and \cite{pap203}.
+Any augmented reality image guidance system must contain four core subsystems.
+These are;
+\begin{enumerate}
+\item{the pre-operative imaging system,}
+\item{the registration system,}
+\item{the user interface,}
+\item{and the display system.}
+\end{enumerate}
+The various systems described in the literature each take 
+a different approach to implement each of the subsystems. 
+Robust evaluation, of the type put forward by \cite{pap264}, 
+requires a common way to compare 
+such systems and evaluate their performance. In some cases 
+methods are emerging to do this, for example, different 
+display systems can be classified using the taxonomy proposed by \cite{pap271}. 
+Similarly the use of open source software tool kits such as IGSTK \cite{pap037}
+enables easier comparison of systems. This paper is primarily concerned with
+developing a method to evaluate the registration system.
+
+\subsection{A Minimalist Image Guided Surgery System}
+The goal of this project is  
+to develop the registration subsystem for an image guidance system for
+robot assisted radical prostatectomy, and evaluate how the 
+performance of the registration subsystem affects the clinical outcome. 
+To this end the first task was to build a minimalist image guidance system
+that could serve as a baseline for ongoing development and evaluation.
+
+The remaining components were kept as simple as possible.
+The imaging system used unprocessed T2 weighted MRI images of the patients 
+prostate. These were in use clinically for pre-operative assessment by the 
+surgical team, so their use for image guidance was straightforward.
+The display system simply shows the MRI images overlaid on the
+surgical scene with user variable opacity on a separate laptop screen or
+on the daVinci S auxiliary display.
+Figure \ref{fig:Overlay} shows 
+an example of the system in use. 
+
+We have maintained a simple MRI slice overlay  
+for two reasons. Firstly, the implementation of systems that show rendered 3D anatomy
+, e.g. \cite{pap178,pap208}, require that the preoperative image (MRI) 
+is first ``segmented". The anatomy of interest, 
+(prostate, tumour location, neuro-vascular bundles) must all be defined 
+in the image. At present this would be done manually by a radiologist.
+This process may introduce errors to the system that are poorly quantified and
+difficult to control for.
+%This process removes information from the image, removing some decision 
+%making form the surgical team. 
+%By keeping the display of the raw MRI image
+%we ensure that the surgical team retains full decision making control.
+%Secondly, segmenting the image introduces an additional source of errors. 
+
+The user interface used is keyboard 
+control via the laptop computer. Two different registration 
+approaches were used. A more complete discussion of the registration 
+system follows.
+
+
+
+
+
+%We have implemented a minimalist user interface that allows the surgeon to move through the 
+%MRI image in the three anatomical directions, and adjust the opacity of the overlay from 
+%0\% (ie. no image) to 100\% (the surgical scene is obscured). Most proposed 
+%augmented reality systems for surgery propose a more sophisticated display, with 
+%rendered 3D representations of anatomy being overlaid, rather than the MRI image, see
+%\cite{pap208} for a recent example. \cite{pap178} give a good demonstration 
+%of the possibilities of augmented reality for laparoscopic surgery. 
+
+
+%The type of projection used (segmented and rendered anatomy or MRI slices) does
+%not depend on the registration technology described in this paper. We intend to use our system
+%at a later data to properly compare various overlay methods and user interfaces.
+
+
+\subsection{Image Registration for Augmented Reality Image Guided Surgery}
+To implement and image overlay system it is necessary to know the correct
+position of the preoperative image relative to the camera lens. Failure to correctly determine this
+relationship will result in a mismatch between the anatomy visible on the overlay and the 
+actual patient anatomy visible through the camera. We refer to the process of 
+determining the correct position and pose for the pre-operative anatomy as a ``registration" 
+process. Two images, the intraoperative camera view and the
+pre-operative image, are registered so that they are aligned. 
+For cases such as abdominal laparoscopic surgery,
+where the shape of the anatomy can change during surgery, it may also be necessary to deform the
+pre-operative images to achieve an accurate registration. Within the literature there are many
+proposed methods for performing the registration process. To date the most common method
+is the use use of fiducial markers. \cite{pap191}, \cite{pap190}, \cite{pap188} 
+and \cite{pap210}, use a calibrated and tracked camera together with fiducial markers.
+Such systems have the advantage that they 
+will function regardless of what anatomy is visible through the laparoscope, i.e. they 
+can operate blind.
+In cases where landmarks are visible through the camera the visible anatomy can itself be
+used for registration, as
+proposed for the daVinci by \cite{pap208} and \cite{pap203}.
+
+The registration process can be defined as the determination of a set of 
+mathematical transforms between coordinate systems. Figure
+\ref{fig:Transforms} defines the coordinate systems of interest for this
+application. 
+\begin{figure*}[ht]
+\begin{center}
+\includegraphics[width=0.92\textwidth]{Transforms}
+\end{center}
+\caption{\label{fig:Transforms}Any image guided surgery system is defined by a 
+set of geometric transforms between different coordinate systems. The figure above 
+defines the coordinate systems relevant here. The transforms between individual 
+coordinate systems are combined to give the transform between the preoperative MRI
+($CS_{MRI}$) and the laparoscope's video screen ($CS_{Screen}$). 
+%Several other 
+%authors estimate the transform between $CS_{Sreen}$ and $CS_{Patient}$ (here 
+%represented for simplicity by the pelvic bone) using 
+%visible anatomy and/or fiducial markers. We first attempted to find this transform
+%using an external tracking system.
+}
+\end{figure*}
+
+Whilst the eventual clinical utility of any image guidance system will depend heavily on the
+visualisation and user interface used, at the technical core of any image 
+guidance system must lie the registration process. Our chosen area of study is therefore
+how to estimate the relevant transforms and how errors in the estimation 
+will influence the clinical utility of the finished system.
+%Errors will manifest as a mismatch between the projected preoperative 
+%image and the video through the endoscope.  
+%ethods to quantify and minimise these errors form the core of our research.
+
+We designed and tested two methods to estimate the registration transform 
+from the camera lens to the preoperative image. Neither system accounts for
+non rigid deformation of the tissue which will occur in practice. Therefore 
+their accuracy is limited by the degree of shape change between intraoperative 
+imaging and surgery. 
+
+Both methods avoid the need for fiducial markers by utilising the pelvic bone. 
+The pelvic bone is useful as it can be seen in various preoperative imaging 
+modalities and intra-operatively and the shape of the pelvic bone
+will not change. Additionally, the prostate is near the centroid of the
+pelvic bone, meaning registration errors will be minimised.
+Both methods estimate the position of the camera lens using 
+an optical tracking system, shown in figure \ref{fig:EndoTracker}\footnote{
+Optical tracking was used to in preference to 
+daVinci kinematic data as the literature indicated it should be the
+more accurate tracking method (\cite{pap171,pap164,pap153}).}.
+
+\begin{figure*}
+\begin{center}
+\includegraphics[width=0.96\textwidth]{/home/thompson/phd/data/Exp02/exp2Photos/Certus_Markup_andCollar}
+\end{center}
+\caption{\label{fig:EndoTracker}The laparoscope is tracked with 14 infra red emitting diodes 
+attached to a collar. The position of each diode is tracked using a three camera
+Optotrak Certus system.}
+\end{figure*}
+
+The methods differ in how they determine the position of the patient 
+relative to the laparoscope lens. The first method developed utilises the 
+fact that the internal surface of the pubic arch is visible through the 
+laparoscope during the latter stages of prostatectomy. Prior to surgery an ordered  
+set of 42 points on the inner surface of the pubic arch are manually defined in the MRI
+image. A wire-frame image of these points is shown overlaid on the surgical scene. The 
+wire-frame image is manually aligned in 2D with the visible pubic arch using a simple 
+keyboard interface. Figure \ref{fig:Alignment} shows the alignment process. 
+\begin{figure*}
+\begin{center}
+\includegraphics[width=0.46\textwidth]{/home/thompson/phd/all/chapters/figures/Notalign19999}
+\includegraphics[width=0.46\textwidth]{//home/thompson/phd/all/chapters/figures/align19999}
+\end{center}
+\caption{\label{fig:Alignment}A set of 42 points on the inner surface of the pubic arch 
+are manually identified in the MRI image. These form a wire frame that can be projected 
+over the surgical scene. A simple user interface is then used to 
+align the projected wire frame to the visible anatomy. 
+The left hand image shows the wire frame and visible anatomy out of alignment, the right hand
+image shows them after alignment. 
+Alignment takes less than 30 seconds.}
+\end{figure*}
+Once the
+alignment is established it is in theory possible to maintain alignment using the 
+optical tracking data for the laparoscope. 
+
+Using the manual alignment method was perceived to have two significant
+drawbacks. Firstly it is 
+difficult to properly quantify the alignment accuracy, though early results 
+indicate that the system has an apparent error of around 20 mm. Secondly the 
+requirement for visibility of the pubic arch prevents the use of the system in the 
+early stages of the operation. Whether or not the second of these problems is 
+significant or not will be discussed later, as it is an important point 
+in the process of designing a clinically useful system.
+To enable the system to be used whether or not the pubic arch was visible 
+an alternative method was developed, utilising a b-mode ultrasound probe to 
+percutaneously image the patient's pelvic bone in the operating room, 
+see \cite{pap009} and \cite{pap170}. Figure 
+\ref{fig:Ultrsound} shows the process. 
+\begin{figure*}
+\begin{center}
+\includegraphics[width=0.46\textwidth]{/home/thompson/phd/all/chapters/Figures/USSlicesOnBone}
+\includegraphics[width=0.46\textwidth]{/home/thompson/phd/Hamlyn-Robotics/UltrasoundCapture_Anon}
+\end{center}
+\caption{\label{fig:Ultrsound}A set of ultrasound images of the patient's pelvic bone 
+are acquired immediately prior to surgery, with the patient in the operating position. These
+are aligned to a pseudo CT image of the patient's pelvis using an image to image registration 
+algorithm.}
+\end{figure*}
+
+Finding the pelvic bone using an ultrasound should be more accurate than 
+simple visual alignment and enables image guidance in the earliest stages of the 
+procedure. These improvements come at the cost of significantly increased complexity. 
+There is the obvious need for an ultrasound machine in the operating theatre, but there is 
+also significant computational complexity within the algorithm to register the ultrasound
+images to the pre-operative MRI images. Thus, having implemented two possible registration 
+methods, the question arises how they are to be compared and assessed. Furthermore as the
+methods are developed and improved, how can any future assessments be assessed. The next section 
+puts forward a framework to assess the performance of an image guidance system for 
+laparoscopic radical prostatectomy.  
+
+
+% up to here, I think I've described it well enough, lets move on
+%We are in this instance only evaluating the registration component.
+
+%Then section on clinical outcomes to technical outcomes.
+%Assessment.
+
+%Then accuracy and complexity.
+%Plotting our systems on the accuracy / complexity chart.
+
+%Future developments. (where do they fall on the chart)
+
+
+
+%We want to improve our 
+%validation and develop a systematic development protocol.
+%That is 
+% 1 - Clinical Needs
+% 2 - System Design Goals
+% 3 - Defining the system
+% talk about accuracy here and also how the interface can be
+% defined based on the taxonomy paper.
+% 4 - My amusing charts, lets focus on the accuracy, what it 
+% means, how it's measured, can it be treated independently.
+% Put in my charts, which assume that all other factors are held 
+% constant.
+% 4 - Our test bed and results to date
+% 5 - Further work, designing an assessment method for future work.
+% Talk about 

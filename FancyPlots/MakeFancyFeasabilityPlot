@@ -1,0 +1,78 @@
+#! /usr/bin/gnuplot
+
+#going to do two charts, based on graemes, suggestion
+#Feasability vs error
+#Some of these points I can put on.
+#Usefulness vs Error
+#I can also put some of these points on
+
+set terminal postscript eps enhanced color font 'Helvetica,18'
+set output 'FeasVsError.eps'
+
+#want a function that passes through the following points
+#error = 78 pixels : Feasability = 1 the current total system error
+#error = 65 pixels : Feasability = 0.99 the endo tracking error only (ie use fiducials) 
+#error = 42.90 pixels : Improved tracking : Feas = 0.75 (Improved tracking algorithm, what I'm working on
+#error = 20.00 pixels : Combined tracking : Feas = 0.6 (this is quite speculative)
+#error = 10.00 pixels : Feas = 0.2 (Who knows)
+#error = 0.000 pixels : Feas = 0.0
+
+#converted pixel magnitude errors mm magnitude errors
+#using #GetMagBackProject
+#78 = 18.05 	.2309
+#With endoscope extrinic error removed ~15.7
+#65.42 = 15.15	.2316
+#42.90 = 9.74	.2270
+#19.65 = 4.51	.2295
+#10 = 2.27 to  2.31 est
+#f(x)=(x>18.05) ? 1.0 : a*x**3 + b*x**2 + c * x + d 
+f(x)=a*x**3 + b*x**2 + c * x + d 
+#third column is the weights, used here to make sure the function 
+#passes through 18.05,1.0 and 0.0 0.0
+fit f(x) '-' using 1:2:3 via a,b,c,d 
+19.00 1.0 0.1
+18.05 1.0 1
+15.8 10
+15.15 0.99 10
+9.74 0.75 10
+4.51 0.6 10
+2.27 0.2 10
+0.000 0.0 0.1
+e
+#by fitting it before adding condition below I 
+#can fit to points above 18.05, making it smoother
+f(x)=(x>18.05) ? 1.0 : a*x**3 + b*x**2 + c * x + d 
+set title 'Feasibility vs Back Projected Error (mm)'
+set xlabel 'Back Projected Error (mm)'
+set ylabel 'Feasibility'
+set xrange [0:20.0]
+set yrange [0:1.18]
+set xtics nomirror
+set ytics nomirror
+set border 3
+#set arrow from 18.05,0.1 to 18.05,1.0 nohead
+#set label 1 'Current Performance' at 18.05,1.0 left
+#set label 2 'Use Fiducial Markers' at 15.15,0.75 rotate left
+#set label 3 'Improve Tracking (Bias Correction)' at 9.74,0.75 rotate left
+#set label 4 'Improve Tracking (Add Constraints)' at 4.51,0.75 rotate left
+#set label 5 'Unknown Future Improvement' at 2.27,0.75 rotate left
+set arrow from 15.8,0.99 to 16.5,0.90 nohead
+set arrow from 15.15,0.99 to 14.15,1.08 nohead
+plot f(x) with lines linewidth 32 linecolor rgbcolor "#cccccc" notitle, '-' using 1:2 with points pointtype 6 pointsize 3 lc rgbcolor "black" notitle , '-' using 1:2:3 with labels notitle font 'Helvetica,16'
+18.05 1.0 "Current Performance" 
+15.8 0.99 "Constrain Extrinsic Calibration"
+15.15 0.99 "Use Fiducial Markers" 
+9.74 0.75 "Improve Tracking (Bias Correction)" 
+4.51 0.6 "Improve Tracking (Add Constraints)" 
+2.27 0.2 "Unknown Future Improvement" 
+e
+18.05 1.11 "Current\nPerformance" 
+16.5 0.85 "Constrain Extrinsic\nCalibration"
+14.15 1.15 "Use Fiducial\nMarkers" 
+9.74 0.69 "Improve Tracking\n(Bias Correction)" 
+4.51 0.71 "Improve Tracking\n(Add Constraints)" 
+2.27 0.15 "Speculative\nImprovement" 
+0.000 0.0 
+e
+
+! gv FeasVsError.eps

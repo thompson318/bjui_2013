@@ -1,0 +1,29 @@
+#! /usr/bin/gnuplot
+
+#going to do two charts, based on graemes, suggestion
+#Feasability vs error
+#Some of these points I can put on.
+#Usefulness vs Error
+#I can also put some of these points on
+
+set terminal postscript eps enhanced color font 'Helvetica,18'
+set output 'UtilityVsFeaS.eps'
+
+set title 'Clinical Utility vs Feasibility'
+set xlabel 'Feasibility'
+set ylabel 'Clinical Utility'
+set xrange [0:1.13]
+set yrange [0:1.13]
+set xtics nomirror
+set ytics nomirror
+set border 3
+#set arrow from 18.05,0.1 to 18.05,1.0 nohead
+#set label 1 'Current Performance' at 18.05,1.0 left
+#set label 2 'Use Fiducial Markers' at 15.15,0.75 rotate left
+#set label 3 'Improve Tracking (Bias Correction)' at 9.74,0.75 rotate left
+#set label 4 'Improve Tracking (Add Constraints)' at 4.51,0.75 rotate left
+#set label 5 'Unknown Future Improvement' at 2.27,0.75 rotate left
+
+plot 'FvsU.data' using 2:3 with lines linewidth 32 linecolor rgbcolor "#cccccc" notitle 
+
+! gv UtilityVsFeaS.eps

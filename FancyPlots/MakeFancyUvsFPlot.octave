@@ -1,0 +1,21 @@
+#! /usr/bin/octave --quiet
+
+#feasability curve
+
+fa=7.34931e-05;
+fb=-0.00558466;
+fc=0.13221;
+fd=-8.89354e-07;
+
+#utility curve
+ua=-4.59061e-05;
+ub=0.00331447;
+uc=-0.0891888;
+ud=0.999982;
+
+#want to do a for loop from x = 0 to x = 20, in steps of 0.1
+y=[];
+for x= 0:0.1:20
+	y=[y; x , fa*x^3+fb*x^2+fc*x+fd , ua*x^3+ub*x^2+uc*x+ud ];
+end
+y
